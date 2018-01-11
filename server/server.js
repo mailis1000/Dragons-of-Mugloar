@@ -1,8 +1,9 @@
-require('./config/config');
+require('./config/config')
 
-const express = require('express');
-const axios = require('axios');
-const _ = require('lodash');
+const express = require('express')
+const axios = require('axios')
+
+var {trainDragon, buildDragon} = require('./models/dragonModel');
 
 var app = express();
 const port = process.env.PORT;
@@ -10,70 +11,33 @@ const port = process.env.PORT;
 app.get('/', (req, res) => {
   axios.get('http://www.dragonsofmugloar.com/api/game')
   .then( (response) => {
-    var knight = _.pickBy(response.data.knight, _.isNumber)
-    var dragon = {}
 
-    var smallest = _.chain(knight).values().sort().first().value();
-    var largest = _.chain(knight).values().sort().last().value();
-    var largestDone = false
-    var smallestDone = false
-
-    console.log('New -----------------')
-
-    Object.entries(knight).forEach(([key, value]) => {
-      dragon = _.update(knight, key, function(n) { 
-        
-        console.log('Smallest: ', smallestDone)
-        console.log('Largest: ', largestDone)
-        if (value === smallest && !smallestDone) {
-          smallestDone = true
-          return n
-        } else if (value === largest && !largestDone) {
-          largestDone = true
-          return n + 2
-        } else {
-          return n - 1
-        }
-      });
-    });
-     
-    var readyDragon = _.mapKeys(dragon, function(value, key) {
-      if (key == 'attack') {
-        return 'scaleThickness'
-      } else if (key == 'armor') {
-        return 'clawSharpness'
-      } else if (key == 'agility') {
-        return 'wingStrength'
-      } else if (key == 'endurance') {
-        return 'fireBreath'
-      }
-    });
-    var all = {
-      knightdata: response.data.knight,
-      readyDragon,
-      largest,
-      smallest
+    var dragon = trainDragon(buildDragon(response))
+    
+    var fighters = {
+      knight : response.data.knight,
+      dragon
     }
+
     axios({
       method: 'put',
       url: `http://www.dragonsofmugloar.com/api/game/${response.data.gameId}/solution`,
-      data: {dragon: readyDragon}
+      data: {dragon}
     }).then( (response) => {
-      var test = {
-        all,
+      var data = {
+        fighters,
         response : response.data
       }
-      res.send(test)
+      res.send(data)
     }).catch( error => {
       console.log(error)
-    });
-
+    })
   })
   .catch( error => {
     console.log(error)
-  });
+  })
 
-});
+})
 
 app.listen(port, () => {
   console.log(`Started on port ${port}`);

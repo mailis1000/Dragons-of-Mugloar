@@ -1,4 +1,5 @@
 const _ = require('lodash');
+var parseString = require('xml2js').parseString;
 
 function trainDragon(dragon) {
   fighter = {}
@@ -36,7 +37,58 @@ function buildDragon(response) {
   return dragon
 }
 
+function getDragon(trainedDragon, response, weather) {
+  
+  var weatherCode = weather.code[0]
+  if (weatherCode !== 'SRO') {
+    var dragon = trainedDragon
+    if (weatherCode === 'HVA') {
+      dragon.clawSharpness = dragon.clawSharpness + dragon.fireBreath
+      dragon.fireBreath = 0
+
+      if (dragon.clawSharpness > 10) {
+        dragon.wingStrength = dragon.wingStrength + dragon.clawSharpness - 10
+        dragon.clawSharpness = 10
+      } else {
+        var difference = 10 - dragon.clawSharpness
+        dragon.wingStrength = dragon.wingStrength - difference
+        dragon.clawSharpness = 10
+      }
+    }
+    // if (weatherCode === 'T E') {
+    //   console.log('true')
+    //   Object.entries(dragon).forEach(([key, value]) => {
+    //     dragon = _.update(dragon, key, (stat) => {
+    //       return 5
+    //     })
+    //   })
+    // }
+    return dragon
+  } 
+}
+
+function getZenDragon() {
+  var dragon = {
+      scaleThickness: 5,
+      clawSharpness: 5,
+      wingStrength: 5,
+      fireBreath: 5
+  }
+  return dragon
+}
+
+function getWeather(xml) {
+  var report = {}
+  parseString(xml, (err, result) => {
+    report = result.report
+  })
+  return report
+}
+
 module.exports = {
   trainDragon,
-  buildDragon
+  buildDragon,
+  getDragon,
+  getZenDragon,
+  getWeather
 }

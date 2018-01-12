@@ -6,7 +6,7 @@ const axios = require('axios')
 var {trainDragon, buildDragon, getDragon, getWeather, getZenDragon} = require('./models/dragonModel');
 
 var app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
   axios.get('http://www.dragonsofmugloar.com/api/game')

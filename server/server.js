@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
   axios.get('http://www.dragonsofmugloar.com/api/game')
   .then( (response) => {
 
-    var gameID = response.data.gameId
+    var gameId = response.data.gameId
     
     axios({
       method: 'get',

@@ -37,7 +37,7 @@ function buildDragon(response) {
   return dragon
 }
 
-function getDragon(trainedDragon, response, weather) {
+function getDragon(trainedDragon, weather) {
   
   var weatherCode = weather.code[0]
   if (weatherCode !== 'SRO') {
@@ -55,14 +55,6 @@ function getDragon(trainedDragon, response, weather) {
         dragon.clawSharpness = 10
       }
     }
-    // if (weatherCode === 'T E') {
-    //   console.log('true')
-    //   Object.entries(dragon).forEach(([key, value]) => {
-    //     dragon = _.update(dragon, key, (stat) => {
-    //       return 5
-    //     })
-    //   })
-    // }
     return dragon
   } 
 }

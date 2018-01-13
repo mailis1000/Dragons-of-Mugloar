@@ -6,7 +6,13 @@ const axios = require('axios')
 var {trainDragon, buildDragon, getDragon, getWeather, getZenDragon} = require('./models/dragonModel');
 
 var app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.get('/', (req, res) => {
   axios.get('http://www.dragonsofmugloar.com/api/game')
@@ -23,7 +29,7 @@ app.get('/', (req, res) => {
       var weatherReport = getWeather(weatherResponse.data)
       var dragon = weatherReport.code[0] === 'T E' 
         ? getZenDragon() 
-        : getDragon(trainDragon(buildDragon(response)), weatherResponse, weatherReport)
+        : getDragon(trainDragon(buildDragon(response)), weatherReport)
       
       var data = {
         gameId,

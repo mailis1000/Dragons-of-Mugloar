@@ -2,8 +2,9 @@ require('./config/config')
 
 const express = require('express')
 const axios = require('axios')
+var parseString = require('xml2js').parseString;
 
-var {trainDragon, buildDragon, getDragon, getWeather, getZenDragon} = require('./models/dragonModel');
+var {trainDragon, buildDragon, getDragon, getZenDragon} = require('./models/dragonModel');
 
 var app = express();
 const port = process.env.PORT || 5000;
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
   .then( (response) => {
 
     var gameId = response.data.gameId
+    // HVA 7563363
     
     axios({
       method: 'get',
@@ -26,7 +28,8 @@ app.get('/', (req, res) => {
       responseType: 'document'
     }).then( (weatherResponse) => {
 
-      var weatherReport = getWeather(weatherResponse.data)
+      parseString(weatherResponse.data, (err, result) => weatherReport = result.report)
+      
       var dragon = weatherReport.code[0] === 'T E' 
         ? getZenDragon() 
         : getDragon(trainDragon(buildDragon(response)), weatherReport)
@@ -38,8 +41,8 @@ app.get('/', (req, res) => {
           dragon
         },
         weather : {
-          code : weatherReport.code,
-          message : weatherReport.message
+          code : weatherReport.code[0],
+          message : weatherReport.message[0]
         }
       }
 

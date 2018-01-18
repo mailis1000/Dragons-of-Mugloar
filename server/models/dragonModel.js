@@ -1,14 +1,13 @@
 const _ = require('lodash');
-var parseString = require('xml2js').parseString;
 
 function trainDragon(dragon) {
-  fighter = {}
-  _.mapKeys(dragon, (value, key) => {
-      key === 'attack' && (fighter['scaleThickness'] = value)
-      key === 'armor' && (fighter['clawSharpness'] = value)
-      key === 'agility' && (fighter['wingStrength'] = value)
-      key === 'endurance' && (fighter['fireBreath'] = value)
-  });
+  let fighter = {
+    scaleThickness: 'attack',
+    clawSharpness: 'armor',
+    wingStrength: 'agility',
+    fireBreath: 'endurance'
+  }
+  Object.entries(fighter).forEach(([key, value]) => (fighter[key] = dragon[value]));
   return fighter
 }
 
@@ -46,41 +45,27 @@ function getDragon(trainedDragon, weather) {
       dragon.clawSharpness = dragon.clawSharpness + dragon.fireBreath
       dragon.fireBreath = 0
 
-      if (dragon.clawSharpness > 10) {
-        dragon.wingStrength = dragon.wingStrength + dragon.clawSharpness - 10
-        dragon.clawSharpness = 10
-      } else {
-        var difference = 10 - dragon.clawSharpness
-        dragon.wingStrength = dragon.wingStrength - difference
-        dragon.clawSharpness = 10
-      }
+      dragon.clawSharpness > 10
+        ? dragon.wingStrength = dragon.wingStrength + dragon.clawSharpness - 10
+        : dragon.wingStrength = dragon.wingStrength - (10 - dragon.clawSharpness)
+      dragon.clawSharpness = 10
     }
     return dragon
   } 
 }
 
 function getZenDragon() {
-  var dragon = {
-      scaleThickness: 5,
-      clawSharpness: 5,
-      wingStrength: 5,
-      fireBreath: 5
+  return {
+    scaleThickness: 5,
+    clawSharpness: 5,
+    wingStrength: 5,
+    fireBreath: 5
   }
-  return dragon
-}
-
-function getWeather(xml) {
-  var report = {}
-  parseString(xml, (err, result) => {
-    report = result.report
-  })
-  return report
 }
 
 module.exports = {
   trainDragon,
   buildDragon,
   getDragon,
-  getZenDragon,
-  getWeather
+  getZenDragon
 }

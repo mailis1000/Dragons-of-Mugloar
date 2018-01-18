@@ -20,7 +20,6 @@ app.get('/', (req, res) => {
   .then( (response) => {
 
     var gameId = response.data.gameId
-    // HVA 7563363
     
     axios({
       method: 'get',

@@ -12,6 +12,7 @@ function trainDragon(dragon) {
 }
 
 function buildDragon(response) {
+  console.log(response)
   var knight = _.pickBy(response.data.knight, _.isNumber)
   var dragon = {}
 
